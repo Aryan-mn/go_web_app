@@ -2,8 +2,8 @@ package render
 
 import (
 	"bytes"
-	"github.com/aryan_mn/test/pkg/config"
-	"github.com/aryan_mn/test/pkg/model"
+	"github.com/Aryan-mn/go_web_app/pkg/config"
+	"github.com/Aryan-mn/go_web_app/pkg/model"
 	"html/template"
 	"log"
 	"net/http"

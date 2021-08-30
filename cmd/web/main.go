@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/aryan_mn/test/pkg/config"
-	"github.com/aryan_mn/test/pkg/render"
+	"github.com/Aryan-mn/go_web_app/pkg/config"
+	"github.com/Aryan-mn/go_web_app/pkg/handlers"
+	"ggithub.com/Aryan-mn/go_web_app/pkg/render"
 	"log"
 	"net/http"
-	"github.com/aryan_mn/test/pkg/handlers"
 )
 
 
@@ -24,9 +24,15 @@ func main() {
 
 	render.NewTemplate(&app)
 
-	http.HandleFunc("/", handlers.Repo.Index)
-	http.HandleFunc("/about", handlers.Repo.About)
+	//http.HandleFunc("/", handlers.Repo.Index)
+	//http.HandleFunc("/about", handlers.Repo.About)
 
 	fmt.Println(fmt.Sprintf("Starting application on port :8080"))
-	http.ListenAndServe(":8080", nil)
+	//http.ListenAndServe(":8080", nil)
+	srv := &http.Server{
+		Addr: ":8080",
+		Handler: routes(&app),
+	}
+	err = srv.ListenAndServe()
+	log.Fatalln(err)
 }
