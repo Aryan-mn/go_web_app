@@ -4,14 +4,29 @@ import (
 	"fmt"
 	"github.com/Aryan-mn/go_web_app/pkg/config"
 	"github.com/Aryan-mn/go_web_app/pkg/handlers"
-	"ggithub.com/Aryan-mn/go_web_app/pkg/render"
+	"github.com/Aryan-mn/go_web_app/pkg/render"
+	"github.com/alexedwards/scs/v2"
 	"log"
 	"net/http"
+	"time"
 )
 
+var app config.AppConfig
+var session *scs.SessionManager
 
 func main() {
-	var app config.AppConfig
+
+	// change to true when in production
+	app.InProduction = false
+
+	session = scs.New ()
+	session.Lifetime = 24 * time.Hour
+	session.Cookie.Persist = true
+	session.Cookie.SameSite = http.SameSiteLaxMode
+	session.Cookie.Secure = app.InProduction
+
+	app.Session = session
+
 	tc, err := render.CreatTemplateCache()
 	if err !=nil{
 		log.Fatal(err)
