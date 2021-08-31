@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/Aryan-mn/go_web_app/pkg/config"
-	"github.com/Aryan-mn/go_web_app/pkg/handlers"
-	"github.com/Aryan-mn/go_web_app/pkg/render"
+	"github.com/Aryan-mn/go_web_app/internal/config"
+	"github.com/Aryan-mn/go_web_app/internal/handlers"
+	"github.com/Aryan-mn/go_web_app/internal/render"
 	"github.com/alexedwards/scs/v2"
 	"log"
 	"net/http"

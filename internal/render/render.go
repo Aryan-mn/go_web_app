@@ -2,8 +2,9 @@ package render
 
 import (
 	"bytes"
-	"github.com/Aryan-mn/go_web_app/pkg/config"
-	"github.com/Aryan-mn/go_web_app/pkg/model"
+	"github.com/Aryan-mn/go_web_app/internal/config"
+	"github.com/Aryan-mn/go_web_app/internal/model"
+	"github.com/justinas/nosurf"
 	"html/template"
 	"log"
 	"net/http"
@@ -17,12 +18,13 @@ func NewTemplate(a *config.AppConfig){
 	app = a
 }
 
-func AddDefaultData(td *model.TemplateData) *model.TemplateData {
+func AddDefaultData(td *model.TemplateData, r *http.Request) *model.TemplateData {
+	td.CSRFToken = nosurf.Token(r)
 	return td
 }
 
 
-func RenderTemplate(w http.ResponseWriter, tpl string, td *model.TemplateData){
+func RenderTemplate(w http.ResponseWriter,r *http.Request, tpl string, td *model.TemplateData){
 	var tc map[string]*template.Template
 
 	if app.UseCache{
@@ -39,7 +41,7 @@ func RenderTemplate(w http.ResponseWriter, tpl string, td *model.TemplateData){
 
 	buf := new(bytes.Buffer)
 
-	td = AddDefaultData(td)
+	td = AddDefaultData(td, r)
 	_ = t.Execute(buf, td)
 
 	_,err := buf.WriteTo(w)
