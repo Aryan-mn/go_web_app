@@ -1,9 +1,11 @@
 package main
 
 import (
+	"encoding/gob"
 	"fmt"
 	"github.com/Aryan-mn/go_web_app/internal/config"
 	"github.com/Aryan-mn/go_web_app/internal/handlers"
+	"github.com/Aryan-mn/go_web_app/internal/model"
 	"github.com/Aryan-mn/go_web_app/internal/render"
 	"github.com/alexedwards/scs/v2"
 	"log"
@@ -16,10 +18,13 @@ var session *scs.SessionManager
 
 func main() {
 
+	//stuff that i put in the session
+	gob.Register(model.Reservation{})
+
 	// change to true when in production
 	app.InProduction = false
 
-	session = scs.New ()
+	session = scs.New()
 	session.Lifetime = 24 * time.Hour
 	session.Cookie.Persist = true
 	session.Cookie.SameSite = http.SameSiteLaxMode

@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/Aryan-mn/go_web_app/internal/config"
+	"github.com/Aryan-mn/go_web_app/internal/forms"
 	"github.com/Aryan-mn/go_web_app/internal/model"
 	"github.com/Aryan-mn/go_web_app/internal/render"
+	"log"
 	"net/http"
 )
 
@@ -48,7 +50,44 @@ func (m *Repository) About (w http.ResponseWriter, r *http.Request){
 }
 
 func (m *Repository) Reservation (w http.ResponseWriter, r *http.Request){
-	render.RenderTemplate(w,r, "make-reservation.gohtml" , &model.TemplateData{})
+	var emptyReservation model.Reservation
+	data := make(map[string]interface{})
+	data["reservation"] = emptyReservation
+	render.RenderTemplate(w,r, "make-reservation.gohtml" , &model.TemplateData{
+		Form: forms.New(nil),
+		Data: data,
+	})
+
+}
+
+func (m *Repository) PostReservation (w http.ResponseWriter, r *http.Request){
+	err:= r.ParseForm()
+	if err != nil{
+		log.Println(err)
+		return
+	}
+	reservation := model.Reservation{
+		FirstName: r.Form.Get("first_name"),
+		LastName:  r.Form.Get("last_name"),
+		Email:     r.Form.Get("email"),
+		Phone:     r.Form.Get("phone"),
+	}
+	form := forms.New(r.PostForm)
+
+	form.Required("first_name","last_name","email")
+	form.MinLength("first_name",3,r)
+	form.IsEmail("email")
+	if !form.Valid(){
+		data := make(map[string]interface{})
+		data["reservation"] = reservation
+		render.RenderTemplate(w,r, "make-reservation.gohtml" , &model.TemplateData{
+			Form: form,
+			Data: data,
+		})
+		return
+	}
+	m.App.Session.Put(r.Context(), "reservation", reservation)
+	http.Redirect(w,r, "/reservation-summary", http.StatusSeeOther)
 }
 
 func (m *Repository) Generals (w http.ResponseWriter, r *http.Request){
@@ -91,4 +130,20 @@ func (m *Repository) AvailabilityJson (w http.ResponseWriter, r *http.Request){
 
 func (m *Repository) Contact (w http.ResponseWriter, r *http.Request){
 	render.RenderTemplate(w,r, "contact.gohtml" , &model.TemplateData{})
+}
+
+func (m *Repository) ReservationSummary (w http.ResponseWriter, r *http.Request){
+	reservation, ok := m.App.Session.Get(r.Context(),"reservation").(model.Reservation)
+	if !ok{
+		log.Println("cannot get item from session")
+		m.App.Session.Put(r.Context(), "error", "cant get reservation from session")
+		http.Redirect(w,r,"/", http.StatusTemporaryRedirect)
+		return
+	}
+	m.App.Session.Remove(r.Context(), "reservation")
+	data := make(map[string]interface{})
+	data["reservation"] = reservation
+	render.RenderTemplate(w,r, "reservation-summary.gohtml" , &model.TemplateData{
+		Data: data,
+	})
 }
