@@ -13,7 +13,7 @@ func writeToConsole(next http.Handler) http.Handler {
 	})
 }
 
-func noSurf(next http.Handler)http.Handler {
+func NoSurf(next http.Handler)http.Handler {
 	csrfHandler := nosurf.New(next)
 	csrfHandler.SetBaseCookie(http.Cookie{
 		HttpOnly: true,

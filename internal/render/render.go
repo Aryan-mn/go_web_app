@@ -2,6 +2,7 @@ package render
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/Aryan-mn/go_web_app/internal/config"
 	"github.com/Aryan-mn/go_web_app/internal/model"
 	"github.com/justinas/nosurf"
@@ -14,6 +15,8 @@ import (
 var functions = template.FuncMap{}
 
 var app *config.AppConfig
+var pathToTemplates = "./templates"
+
 func NewTemplate(a *config.AppConfig){
 	app = a
 }
@@ -56,7 +59,7 @@ func RenderTemplate(w http.ResponseWriter,r *http.Request, tpl string, td *model
 // Creat a template cache as a map
 func CreatTemplateCache() (map[string]*template.Template, error) {
 	myCache := map[string]*template.Template{}
-	pages,err := filepath.Glob("./templates/*.gohtml")
+	pages,err := filepath.Glob(fmt.Sprintf("%s/*.gohtml", pathToTemplates))
 	if err !=nil{
 		return myCache, err
 	}
@@ -68,12 +71,12 @@ func CreatTemplateCache() (map[string]*template.Template, error) {
 			return myCache,err
 		}
 
-		matches, err := filepath.Glob("./templates/*.layout.gohtml")
+		matches, err := filepath.Glob(fmt.Sprintf("%s/*.layout.gohtml", pathToTemplates))
 		if err !=nil{
 			return myCache,err
 		}
 		if len(matches) >0 {
-			ts,err = ts.ParseGlob("./templates/*.layout.gohtml")
+			ts,err = ts.ParseGlob(fmt.Sprintf("%s/*.layout.gohtml", pathToTemplates))
 			if err !=nil{
 				return myCache,err
 			}
